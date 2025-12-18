@@ -1,0 +1,31 @@
+name: Origin Revenue Ingestion
+
+on:
+  workflow_dispatch:     # manual run button
+  schedule:
+    - cron: "0 6 1 * *"  # 1st of every month at 06:00 UTC
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run revenue ingestion
+        run: python src/fetch_revenue.py
+
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: origin-revenue
+          path: "*.csv"
